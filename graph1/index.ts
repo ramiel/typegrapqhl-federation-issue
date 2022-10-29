@@ -15,12 +15,12 @@ export const startGraph1 = async () => {
     },
     {
       Organization: {
-        __resolveReference(ref: any) {
+        __resolveReference(ref: Pick<Organization, "id">) {
           console.log("this is not called!");
           console.log(ref);
           return {
-            id: 1,
-            name: "org from reference",
+            id: ref.id,
+            name: `Organization ${ref.id}`,
           };
         },
       },
