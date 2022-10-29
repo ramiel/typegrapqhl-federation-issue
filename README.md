@@ -11,7 +11,7 @@ A gateway built with Graphql Yoga (the result is the same with apollo server).
 
 Launch everything with `yarn start` or `npm start`
 
-If you open graphiql at [http://localhost:5002/graphql] a query should already be present
+If you open graphiql at [http://localhost:5002/graphql](http://localhost:5002/graphql) a query should already be present
 
 To reproduce the problem launch the query (below the same query):
 
