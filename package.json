@@ -5,15 +5,16 @@
   "author": "Fabrizio Ruggeri",
   "license": "MIT",
   "scripts": {
-    "start": "DEBUG=0 NODE_ENV=development ts-node index.ts"
+    "start": "DEBUG=0 NODE_ENV=development ts-node index.ts",
+    "dev": "yarn start"
   },
   "dependencies": {
     "@apollo/gateway": "^2.1.4",
+    "@apollo/server": "^4.0.5",
     "@apollo/subgraph": "^2.1.4",
     "@envelop/apollo-federation": "^3.0.3",
     "@graphql-tools/schema": "^9.0.5",
     "@graphql-tools/utils": "^8.13.0",
-    "apollo-server": "^3.10.4",
     "fastify": "^4.9.2",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",

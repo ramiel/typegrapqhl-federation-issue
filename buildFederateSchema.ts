@@ -19,8 +19,6 @@ export async function buildFederatedSchema(
     skipCheck: true,
   });
 
-  console.log(printSchemaWithDirectives(schema));
-
   const federatedSchema = buildSubgraphSchema({
     typeDefs: gql(printSchemaWithDirectives(schema)),
     resolvers: createResolversMap(schema) as any,
@@ -32,5 +30,7 @@ export async function buildFederatedSchema(
       resolvers: referenceResolvers,
     });
   }
+  // console.log(printSchemaWithDirectives(federatedSchema));
+
   return federatedSchema;
 }

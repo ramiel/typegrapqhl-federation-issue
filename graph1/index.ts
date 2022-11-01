@@ -3,7 +3,8 @@ import "reflect-metadata";
 import { buildFederatedSchema } from "../buildFederateSchema";
 import { OrganizationResolver, data as orgData } from "./OrganizationResolver";
 import { Organization } from "./Organization";
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
 
 export const startGraph1 = async () => {
   const schema = await buildFederatedSchema(
@@ -21,9 +22,21 @@ export const startGraph1 = async () => {
       },
     }
   );
-  const server = new ApolloServer({ schema, debug: true });
+  const server = new ApolloServer({
+    schema,
+    includeStacktraceInErrorResponses: true,
+    logger: {
+      info: console.log,
+      debug: console.log,
+      warn: console.warn,
+      error: console.error,
+    },
+  });
 
-  return server.listen({ port: 5000 });
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 5001 },
+  });
+  return url;
 };
 
 // start();

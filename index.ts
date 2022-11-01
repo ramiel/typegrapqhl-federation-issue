@@ -1,11 +1,9 @@
-import Fastify, { FastifyReply, FastifyRequest } from "fastify";
 import { ApolloGateway, IntrospectAndCompose } from "@apollo/gateway";
-import { useApolloFederation } from "@envelop/apollo-federation";
-import { createYoga } from "graphql-yoga";
 
 import { startGraph1 } from "./graph1";
 import { startGraph2 } from "./graph2";
-import { ApolloServer } from "apollo-server";
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
 
 const startGateway = async () => {
   await startGraph1();
@@ -14,21 +12,23 @@ const startGateway = async () => {
   const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
       subgraphs: [
-        { name: "graph1", url: "http://localhost:5000/graphql" },
-        { name: "graph2", url: "http://localhost:5001/graphql" },
+        // { name: "graph1", url: "http://localhost:5001/graphql" },
+        // { name: "graph2", url: "http://localhost:5002/graphql" },
+
+        { name: "accounts", url: "http://localhost:3001" },
+        { name: "reviews", url: "http://localhost:3002" },
+        { name: "products", url: "http://localhost:3003" },
+        { name: "inventory", url: "http://localhost:3004" },
       ],
     }),
   });
 
-  const { schema, executor } = await gateway.load();
-
   const server = new ApolloServer({
-    schema,
-    executor,
-    debug: true,
+    gateway,
   });
-
-  const { url } = await server.listen({ port: 5002 });
+  const { url } = await startStandaloneServer(server, {
+    listen: { port: 5000 },
+  });
   console.log(url);
 };
 
