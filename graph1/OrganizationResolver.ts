@@ -12,7 +12,7 @@ export const data: Array<Organization> = [
   },
   {
     id: "3",
-    name: "Org 2",
+    name: "Org 3",
   },
 ];
 

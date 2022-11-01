@@ -5,11 +5,11 @@ import { createYoga } from "graphql-yoga";
 
 import { startGraph1 } from "./graph1";
 import { startGraph2 } from "./graph2";
+import { ApolloServer } from "apollo-server";
 
 const startGateway = async () => {
   await startGraph1();
   await startGraph2();
-  const app = Fastify();
 
   const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
@@ -20,57 +20,16 @@ const startGateway = async () => {
     }),
   });
 
-  await gateway.load();
-  const yoga = createYoga<{
-    req: FastifyRequest;
-    reply: FastifyReply;
-  }>({
-    graphqlEndpoint: "/graphql",
-    graphiql: {
-      defaultQuery: `query {
-        rooms {
-          id
-          name
-          organization {
-            id
-            ## Uncomment the following to get the error
-            # name
-          }
-        }
-      }`,
-    },
-    plugins: [
-      useApolloFederation({
-        gateway,
-      }),
-    ],
-  });
-  app.route({
-    url: "/graphql",
-    method: ["GET", "POST", "OPTIONS"],
-    handler: async (req: FastifyRequest, reply: FastifyReply) => {
-      const response = await yoga.handleNodeRequest(req, {
-        req,
-        reply,
-      });
-      response.headers.forEach((value, key) => {
-        if (
-          key === "content-type" &&
-          value.startsWith("application/graphql-response+json")
-        ) {
-          reply.header("content-type", "application/json; charset=utf-8");
-          return;
-        }
-        reply.header(key, value);
-      });
-      reply.status(response.status);
-      reply.send(response.body);
-      return reply;
-    },
+  const { schema, executor } = await gateway.load();
+
+  const server = new ApolloServer({
+    schema,
+    executor,
+    debug: true,
   });
 
-  await app.listen({ port: 5002 });
-  console.log("http://localhost:5002/graphql");
+  const { url } = await server.listen({ port: 5002 });
+  console.log(url);
 };
 
 startGateway();

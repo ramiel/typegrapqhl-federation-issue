@@ -1,9 +1,10 @@
-import { Field, ObjectType } from "type-graphql";
+import { Directive, Field, ID, ObjectType } from "type-graphql";
 import { Organization } from "./Organization";
 
+@Directive(`@key(fields: "id")`)
 @ObjectType()
 export class Room {
-  @Field()
+  @Field(() => ID)
   id!: string;
 
   @Field()

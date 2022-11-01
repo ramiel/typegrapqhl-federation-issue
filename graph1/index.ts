@@ -6,14 +6,14 @@ import { Organization } from "./Organization";
 import { ApolloServer } from "apollo-server";
 
 export const startGraph1 = async () => {
-  const { schema } = await buildFederatedSchema(
+  const schema = await buildFederatedSchema(
     {
       resolvers: [OrganizationResolver],
       orphanedTypes: [Organization],
     },
     {
       Organization: {
-        __resolveReference(ref: Pick<Organization, "id">) {
+        __resolveReference: async (ref: Pick<Organization, "id">) => {
           console.log("this is not called!");
           console.log(ref);
           return orgData.find((o) => o.id === ref.id);
@@ -21,7 +21,7 @@ export const startGraph1 = async () => {
       },
     }
   );
-  const server = new ApolloServer({ schema });
+  const server = new ApolloServer({ schema, debug: true });
 
   return server.listen({ port: 5000 });
 };
