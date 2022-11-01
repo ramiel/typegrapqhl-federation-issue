@@ -12,13 +12,13 @@ const startGateway = async () => {
   const gateway = new ApolloGateway({
     supergraphSdl: new IntrospectAndCompose({
       subgraphs: [
-        // { name: "graph1", url: "http://localhost:5001/graphql" },
-        // { name: "graph2", url: "http://localhost:5002/graphql" },
+        { name: "graph1", url: "http://localhost:5001/graphql" },
+        { name: "graph2", url: "http://localhost:5002/graphql" },
 
-        { name: "accounts", url: "http://localhost:3001" },
-        { name: "reviews", url: "http://localhost:3002" },
-        { name: "products", url: "http://localhost:3003" },
-        { name: "inventory", url: "http://localhost:3004" },
+        // { name: "accounts", url: "http://localhost:3001" },
+        // { name: "reviews", url: "http://localhost:3002" },
+        // { name: "products", url: "http://localhost:3003" },
+        // { name: "inventory", url: "http://localhost:3004" },
       ],
     }),
   });

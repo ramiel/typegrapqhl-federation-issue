@@ -6,6 +6,14 @@ import { Organization } from "./Organization";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 
+const organizationReferenceResolver = async (
+  ref: Pick<Organization, "id">,
+  _ctx: any,
+  _info: any
+): Promise<Organization | null> => {
+  return orgData.find((o) => o.id === ref.id) || null;
+};
+
 export const startGraph1 = async () => {
   const schema = await buildFederatedSchema(
     {
@@ -14,11 +22,7 @@ export const startGraph1 = async () => {
     },
     {
       Organization: {
-        __resolveReference: async (ref: Pick<Organization, "id">) => {
-          console.log("this is not called!");
-          console.log(ref);
-          return orgData.find((o) => o.id === ref.id);
-        },
+        __resolveReference: organizationReferenceResolver,
       },
     }
   );
