@@ -1,13 +1,11 @@
 import "reflect-metadata";
 
-import fastifyFactory, { FastifyReply, FastifyRequest } from "fastify";
-import { createYoga } from "graphql-yoga";
 import { buildFederatedSchema } from "../buildFederateSchema";
-import { OrganizationResolver } from "./OrganizationResolver";
+import { OrganizationResolver, data as orgData } from "./OrganizationResolver";
 import { Organization } from "./Organization";
+import { ApolloServer } from "apollo-server";
 
 export const startGraph1 = async () => {
-  const server = fastifyFactory();
   const { schema } = await buildFederatedSchema(
     {
       resolvers: [OrganizationResolver],
@@ -18,44 +16,12 @@ export const startGraph1 = async () => {
         __resolveReference(ref: Pick<Organization, "id">) {
           console.log("this is not called!");
           console.log(ref);
-          return {
-            id: ref.id,
-            name: `Organization ${ref.id}`,
-          };
+          return orgData.find((o) => o.id === ref.id);
         },
       },
     }
   );
-
-  const yoga = createYoga<{
-    req: FastifyRequest;
-    reply: FastifyReply;
-  }>({
-    schema,
-  });
-  server.route({
-    url: "/graphql",
-    method: ["GET", "POST", "OPTIONS"],
-    handler: async (req: FastifyRequest, reply: FastifyReply) => {
-      const response = await yoga.handleNodeRequest(req, {
-        req,
-        reply,
-      });
-      response.headers.forEach((value, key) => {
-        if (
-          key === "content-type" &&
-          value.startsWith("application/graphql-response+json")
-        ) {
-          reply.header("content-type", "application/json; charset=utf-8");
-          return;
-        }
-        reply.header(key, value);
-      });
-      reply.status(response.status);
-      reply.send(response.body);
-      return reply;
-    },
-  });
+  const server = new ApolloServer({ schema });
 
   return server.listen({ port: 5000 });
 };
